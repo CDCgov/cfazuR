@@ -42,7 +42,7 @@ library(cfazuR)
 
 ## Project Admin
 
-- Katie Gostic: email = `uep6@cdc.gov`
+- Katelyn Gostic: email = `uep6@cdc.gov`
 - Zack Susswein: email = `utb2@cdc.gov`
 - Nate McIntosh: email = `ute2@cdc.gov`
 - Patrick Corbett: email = `pyv3@cdc.gov`
