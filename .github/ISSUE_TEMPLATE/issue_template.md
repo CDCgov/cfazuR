@@ -1,18 +1,19 @@
 ---
 name: Issue Template
 about: A template for writing specs following CFA Predict team standards
-title: ''
-labels: ''
-assignees: ''
-
+title: ""
+labels: ""
+assignees: ""
 ---
 
 This template should be used as an outline. It may not be necessary to fill out every section. Delete this block of text and fill in anything in brackets. See this [example issue](https://github.com/cdcent/cfa-nnh-pipelines/issues/107) for inspiration.
 
 ## Goal
+
 [1-3 sentence summary of the issue or feature request. E.g. "We want to be able to ..."]
 
 ## Context
+
 [Short paragraph describing how the issue arose and constraints imposed by the existing code architecture]
 
 ## Required features
@@ -23,6 +24,7 @@ This template should be used as an outline. It may not be necessary to fill out 
 - etc...
 
 ## Specifications
+
 [A checklist to keep track of details for each feature. At least one specification per feature is recommended. Edit the example below:]
 
 - [ ] EX2: A function that reads data from the `some-api` API and returns the dataset
