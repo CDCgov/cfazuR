@@ -1,4 +1,4 @@
-#' Split a string
+#' Split a string. A placeholder func from R Packages 2e.
 #'
 #' @param string A character vector with, at most, one element.
 #' @inheritParams stringr::str_split
