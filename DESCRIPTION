@@ -1,0 +1,19 @@
+Package: cfazuR
+Title: Perform Microsoft Azure related actions from R
+Version: 0.1.0
+Authors@R: c(
+    person("Katelyn", "Gostic", email = "uep6@cdc.gov", role = c("aut", "cre")),
+    person("Zack", "Susswein", email = "utb2@cdc.gov", role = c("aut")),
+    person("Nate", "McIntosh", email = "ute2@cdc.gov", role = c("aut")),
+    person("Patrick", "Corbett", email = "pyv3@cdc.gov", role = c("aut")),
+    person("CDC/IOD/ORR/CFA", role = c("fnd")))
+Description: Upload and download files from Azure Storage, manage credentials.
+License: Apache License (>= 2)
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Suggests:
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+Imports:
+    stringr
