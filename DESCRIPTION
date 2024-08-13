@@ -4,7 +4,7 @@ Version: 0.1.0
 Authors@R: c(
     person("Katie", "Gostic", email = "uep6@cdc.gov", role = c("aut", "cre")),
     person("Zack", "Susswein", email = "utb2@cdc.gov", role = c("aut")),
-    person("Nate", "McIntosh", email = "ute2@cdc.gov", role = c("aut", "cre")),
+    person("Nate", "McIntosh", email = "ute2@cdc.gov", role = c("aut")),
     person("Patrick", "Corbett", email = "pyv3@cdc.gov", role = c("aut")),
     person("CDC/IOD/ORR/CFA", role = c("fnd")))
 Description: Upload and download files from Azure Storage, manage credentials.
