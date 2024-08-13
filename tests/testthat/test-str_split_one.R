@@ -3,7 +3,7 @@ test_that("str_split_one() splits a string", {
 })
 
 test_that("str_split_one() errors if input length > 1", {
-  expect_error(str_split_one(c("a,b","c,d"), ","))
+  expect_error(str_split_one(c("a,b", "c,d"), ","))
 })
 
 test_that("str_split_one() exposes features of stringr::str_split()", {
