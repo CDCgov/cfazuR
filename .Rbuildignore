@@ -1,6 +1,7 @@
 ^CONTRIBUTING.md$
 ^DISCLAIMER.md$
 ^LICENSE.md$
+^LICENSE\.md$
 ^\.github$
 ^\.lintr$
 ^\.pre-commit-config\.yaml$
@@ -15,4 +16,3 @@
 ^pkgdown$
 ^rules_of_behavior.md$
 ^thanks.md$
-^LICENSE\.md$
