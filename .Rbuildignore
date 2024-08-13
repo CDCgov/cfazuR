@@ -2,6 +2,7 @@
 ^DISCLAIMER.md$
 ^LICENSE.md$
 ^LICENSE\.md$
+^README\.Rmd$
 ^\.github$
 ^\.lintr$
 ^\.pre-commit-config\.yaml$
@@ -16,4 +17,3 @@
 ^pkgdown$
 ^rules_of_behavior.md$
 ^thanks.md$
-^README\.Rmd$
