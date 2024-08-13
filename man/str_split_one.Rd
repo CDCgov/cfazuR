@@ -2,7 +2,7 @@
 % Please edit documentation in R/str_split_one.R
 \name{str_split_one}
 \alias{str_split_one}
-\title{Split a string}
+\title{Split a string. A placeholder func from R Packages 2e.}
 \usage{
 str_split_one(string, pattern, n = Inf)
 }
@@ -36,7 +36,7 @@ with \code{""}.}
 A character vector.
 }
 \description{
-Split a string
+Split a string. A placeholder func from R Packages 2e.
 }
 \examples{
 x <- "alfa,bravo,charlie,delta"
