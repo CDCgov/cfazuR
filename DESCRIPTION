@@ -7,7 +7,7 @@ Authors@R: c(
     person("Nate", "McIntosh", email = "ute2@cdc.gov", role = c("aut")),
     person("Patrick", "Corbett", email = "pyv3@cdc.gov", role = c("aut")),
     person("CDC/IOD/ORR/CFA", role = c("fnd")))
-Description: What the package does (one paragraph).
+Description: Upload and download files from Azure Storage, manage credentials.
 License: Apache License (>= 2)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
