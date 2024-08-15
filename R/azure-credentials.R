@@ -24,7 +24,8 @@
 
 ## 0. Set and get crednetials from env  ----------------------------------
 
-#' @value a character vector containing all required credentials
+#' List names of all required azure credentials
+#' @returns a character vector containing all required credentials
 #'
 #' @details used to view required credentials and internally to ensure the set
 #' of required credentials is consistent in downstream functions
@@ -47,17 +48,26 @@ az_required_credentials <- function() {
 #'
 #' @return The value stored as the environment variable "env_var" if it exists
 fetch_env_credential <- function(env_var) {
+  if (any(!(env_var %in% az_required_credentials()))) {
+    invalid_creds <- env_var[!(env_var %in% az_required_credentials())]
+    cli::cli_abort(
+      c(
+        "!" = "{.envvar {invalid_creds}} is not a valid credential name."
+      ),
+      class = "cfazuR"
+    )
+  }
 
   cli::cli_alert_info(
     "Attempting to load credentials {.envvar {env_var}} from env vars."
-    )
+  )
   credentials <- Sys.getenv(env_var)
 
   if (any(credentials == "")) {
-    missing_creds <- credentials[credentials == ""]
+    missing_creds <- env_var[credentials == ""]
     cli::cli_warn(
       c(
-        "!" = "Environment variable {.envvar {names(missing_creds)}} not
+        "!" = "Environment variable {.envvar {missing_creds}} not
         specified or empty",
         "i" = "See {.fn crazuR::az_set_env_credentials} for help setting
         credentials"
@@ -66,16 +76,18 @@ fetch_env_credential <- function(env_var) {
     )
   }
 
-  return(credential)
+  return(credentials)
 }
 
 #' Fetch Azure credentials stored as environmental variables, if they exist
 #'
-#' @value A list containing all required credentials: "az_tenant_id",
-#' "az_subscription", "az_resource_group", "az_storage_account", and "az_service_principal",
-#' or an informative error if any are missing
+#' @returns A list containing all required credentials: "az_tenant_id",
+#' "az_subscription", "az_resource_group", "az_storage_account", and "az_service
+#' principal", or an informative error if any are missing
 #'
-#' @details See [Required credential setup](https://github.com/CDCgov/cfazuR/tree/main?tab=readme-ov-file#required-setup-after-installation) for help finding and specifying Azure credntials.
+#'
+#' @details See [Required credential setup](https://github.com/CDCgov/cfazuR/tree/main?tab=readme-ov-file#required-setup-after-installation) #nolint
+#' for help finding and specifying Azure credntials.
 #' @export
 az_get_env_credentials <- function() {
   fetch_env_credential(az_required_credentials()) |> as.list()
@@ -99,13 +111,13 @@ az_validate_credlist <- function(cred_list) {
     cli::cli_abort("!" = "Input `cred_list` must be a list.")
   }
   ## Check that list names include all required credentials
-  cred_in_list <- (az_required_credentials() %in% names(cred_list)) |>
-    set_names(az_required_credentials())
+  cred_in_list <- (az_required_credentials() %in% names(cred_list))
+  names(cred_in_list) <- az_required_credentials()
   missing_creds <- az_required_credentials()[!cred_in_list]
   if (!all(cred_in_list)) {
     cli::cli_abort(
       c(
-        "!" = "Credential names must include:{.field {az_required_credentials()}}",
+        "!" = "cred_list must include:{.field {az_required_credentials()}}",
         "i" = "{.field {missing_creds}} are missing from {.field cred_list}"
       )
     )

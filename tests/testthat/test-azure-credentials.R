@@ -2,76 +2,40 @@
 test_that("az_required_credentials() returns known good values", {
   expect_identical(
     az_required_credentials(),
-      c("az_client_id", "az_tenant_id", "az_subscription",
-      "az_resource_group", "az_storage_account", "az_service_principal")
+    c(
+      "az_client_id",
+      "az_tenant_id",
+      "az_service_principal",
+      "az_subscription_id",
+      "az_resource_group",
+      "az_storage_account"
+    )
   )
 })
 
 good_cred_list <- list(
   "az_client_id" = "aaaa",
   "az_tenant_id" = "bananna",
-  "az_subscription" = "10",
+  "az_service_principal" = "xxx-xx",
+  "az_subscription_id" = "10",
   "az_resource_group" = "blahblah",
-  "az_storage_account" = "some-account",
-  "az_service_principal" = "xxx-xx"
+  "az_storage_account" = "some-account"
 )
-
-## Test az_set_env_credentials() -----------------------------------------------
-test_that("Credentials set as env vars from list", {
-
-  ## Check that env vars are empty before acting
-  expect_error(az_get_env_credentials())
-
-  ## Test passing a list to set env vars
-  az_set_env_credentials(cred_list = good_cred_list)
-  expect_silent(az_get_env_credentials())
-  Sys.unsetenv(az_required_credentials()) # cleanup
-})
-
-test_that("Credentials set as env vars from variable", {
-  ## Test passing individual vars
-  az_set_env_credentials(
-    az_client_id = good_cred_list$az_client_id,
-    az_tenant_id = good_cred_list$az_tenant_id,
-    az_subscription_id = good_cred_list$az_subscription_id,
-    az_resource_group = good_cred_list$az_resource_group,
-    az_storage_account = good_cred_list$az_storage_account,
-    az_service_principal = good_cred_list$az_service_principal
-    )
-  expect_silent(az_get_env_credentials()) # No error if env vars were set
-  Sys.unsetenv(az_required_credentials()) # cleanup
-  })
-
-test_that("Invalid inputs fail", {
-
-  # Non-character
-  expect_error(az_set_env_credentials(az_client_id = 10))
-  # length > 1
-  expect_error(az_set_env_credentials(az_service_principal = c("a", "cat")))
-  # No input
-  expect_error(az_set_env_credentials())
-  # Invalid name
-  expect_error(az_set_env_credentials(cred_list = list("potato" = "xx")))
-  # Repeated name in list and inputs
-  expect_error(az_set_env_credentials(
-    az_client_id = "xx",
-    cred_list = good_cred_list)
-    )
-
-})
-
 
 ## Test fetch_env_credential() -------------------------------------------------
 test_that("Credential fetched successfully from env var", {
-  withr::with_envvar(c("KEY" = "VALUE"), {
-    expect_equal(fetch_env_credential("KEY"), "VALUE")
+  withr::with_envvar(c("az_resource_group" = "abcd"), {
+    expect_equal(fetch_env_credential("az_resource_group"), "abcd")
   })
 })
 
-test_that("Missing credential fails", {
-  withr::with_envvar(c("MISSING_KEY" = ""), {
-    expect_error(fetch_env_credential("MISSING_KEY"))
+test_that("Missing credential warns", {
+  withr::with_envvar(c("az_client_id" = ""), {
+    expect_warning(fetch_env_credential("az_client_id"))
   })
+})
+
+test_that("Invalid credential fails", {
   expect_error(fetch_env_credential("NOT_A_REAL_KEY"))
 })
 
@@ -93,7 +57,7 @@ test_that("Non-character element raises error", {
     "az_storage_account" = "some-account",
     "az_service_principal" = "xxx-xx"
   )
-    expect_error(az_validate_credlist(bad_list))
+  expect_error(az_validate_credlist(bad_list))
 })
 
 test_that("Empty element raises error", {
@@ -105,7 +69,7 @@ test_that("Empty element raises error", {
     "az_storage_account" = "some-account",
     "az_service_principal" = "xxx-xx"
   )
-    expect_error(az_validate_credlist(bad_list))
+  expect_error(az_validate_credlist(bad_list))
 })
 
 test_that("All list elements are length one", {
@@ -117,5 +81,5 @@ test_that("All list elements are length one", {
     "az_storage_account" = "some-account",
     "az_service_principal" = "xxx-xx"
   )
-    expect_error(az_validate_credlist(bad_list))
+  expect_error(az_validate_credlist(bad_list))
 })
