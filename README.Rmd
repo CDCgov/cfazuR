@@ -18,37 +18,245 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of cfazuR is to assist make working with Azure easier in R. It currently offers
-- Credential Management
-- Uploading and downloading files from Azure Blob Storage
+-------
+
+::warning:: This package is a work in progress. We have not yet written all 
+functions or released a stable version. Use at your own risk and consider 
+opening an issue or contributing a PR if you see any problems.
+
+-------
+
+cfazuR is a toolkit that makes it easy to connect to Azure storage resources
+from an R session. It is an opinionated wrapper around [AzureRMR](https://github.com/Auzre/AzureRMR/tree/master)
+and [AzureStor](https://github.com/Auzre/AzureStor/tree/master) that requires some setup, and adherence cfazuR's scehma for
+passing in Azure credentials. 
+
+Once setup is complete, the package makes it possible to access blob resources
+using a simple function call, e.g.
+
+```{r eval=FALSE}
+## Read blob into memory
+my_data <- az_read_blob(
+  container_name = "my_container", 
+  path = "path/to/blob.csv"
+  )
+
+## Download blob to local disk
+az_download_blob(
+  container_name = "my_container", 
+  path = "path/to/blob.ext",
+  dest = "local/destination/blob.ext"
+  )
+
+## Write to blob storage
+az_write_blob(
+  my_data,
+  container_name = "my_container",
+  path = "path/to/blob.ext"
+)
+```
+
+# Getting started
 
 ## Installation
 
 You can install the development version of cfazuR from [GitHub](https://github.com/) with:
 
-``` r
+```{r eval=FALSE}
 # install.packages("pak")
 pak::pak("CDCgov/cfazuR")
 ```
 
-## Example
+## Required setup after installation
 
-This is a basic example which shows you how to solve a common problem:
+To connect to Azure storage resources with cfazuR, you will need to be able to
+authenticate (i.e. log in) to Azure from R. You also need to look up certain
+Azure credentials (i.e. account information) and store them in a location that 
+is secure, but accessible to R.
 
-```{r example}
-library(cfazuR)
-## basic example code
+Follow these the steps carefully the first time you set up the package, and
+refer back to this page if you ever need to update your credentials.
+
+### 1. Learn how to keep your credentials secure
+
+**Big picture: Treat your credentials like passwords.** Do not commit them to GitHub, post
+them on the internet, send them in unencrypted emails, etc. This is especially 
+important for service principals, which are essentially passwords. But it's a 
+good idea to follow these security guidelines for all of your credentials, the
+same way you're probably already used to doing for other kinds of usernames and
+account numbers.
+
+**1.1 [Install and active detect-secrets]()** as a pre-commit hook. This will check 
+your code for secrets before you commit to GitHub and raise an error if it 
+detects a problem. 
+
+**1.2 Never hard-code your credentials** 
+
+```{r eval=FALSE}
+## WHAT NOT TO DO:
+az_login(
+  tenant = "1234-abcd-0987-zyxw",
+  app = "my-actual-client-id",
+  passowrd = "my-actual-service-principal"
+)
 ```
+
+If you accidentally push this code to GitHub, your secrets are now on the 
+internet. Instead, write code that represents your credentials as variables 
+wihtout ever showing the underlying values:
+```{r eval=FALSE}
+## DO THIS INSTEAD
+##  Load credentials stored in a separate, .json, .yaml, or .toml file
+cred_list <- read_json(my_credentials.json)
+## or
+## Store credentials as environment variables and load them at runtime
+cred_list <- cfazuR::get_env_creds() # Load env vars 
+az_login(
+  tenant = cred_list$az_tenant_id,
+  app = cred_list$az_client_id,
+  passowrd = cred_list$az_service_principal
+)
+```
+
+### 2. Look up your Azure Credentials
+
+To log in using [client-based authentication]() you will need:
+
+1. Client ID
+2. Tenant ID
+3. Service principal
+
+To find these, log in to the Azure portal (https://portal.azure.com/), then 
+search for "app registrations" and click on the relevant icon. If an app 
+registration exits, click on it to reveal a page showing the associated 
+client ID, and tenant ID. From this page, click again below "Certificates and 
+secrets" to reveal the service principal value.
+
+:info: If no service principal exists under "App Registrations", contact your 
+Azure account administrator to determine if a valid service principal exists 
+through newer Entra ID services, or if the administrator can create a new 
+service principal for you. 
+
+:info: If you do not have a service principal and are not authorized to create
+one, skip #1-3 and see [authentication methods]() for other login options.
+
+
+To verify that your login was valid for the desired storage endpoint each time
+you try to connect to resources you will need:
+
+4. Subscription ID
+5. Resource group
+6. Storage account
+
+To find these, log in to the Azure portal (https://portal.azure.com/), then 
+search for or navigate to "storage accounts". Click on the storage account
+you want to connect to (the name of this account is one credential you need).
+Then, click on "overview" at the top of the left hand blade for this storage
+account to reveal the Subscription ID and resource group. 
+
+### 3. Store your Azure Credentials for future use
+
+The ultimate goal is to be able to load your credentials as a `cred_list`
+object, as demonstrated [above](). A `cred_list` is simply a list containing
+the following named values. Most cfazuR functions require a `cred_list` input.
+
+* `az_client_id`
+* `az_tenant_id`
+* `az_service_principal`
+* `az_subscription_id`
+* `az_resource_group`
+* `az_storage_account`
+
+**Option 1: Set your credentials as R environment variables**
+This is the recommended option if you are working locally or on the virtual
+analyst platform.
+
+To set your credentials as env vars that load with every R session, copy the text
+below into your global `~/.Renviron` or your project-level `repo/.Renviron` file,
+replacing the right hand side with your Azure credential values. The values on
+the RHS must be in quotes.
+
+* Note that if a project-level .Renviron is present, it will prevent the global ~/.Renviron from running.
+```{r eval=FALSE}
+az_client_id = "xxxx-xxxx-xxxx-xxxx"
+az_tenant_id = "xxxx-xxxx-xxxx-xxxx"
+az_service_principal = "xxxx-xxxx-xxxx-xxxx"
+az_subscription_id = "xxxx-xxxx-xxxx-xxxx"
+az_resource_group = "my-resource-group"
+az_storage_account = "my-storage-account"
+```
+You can use `usethis::edit_r_environ()` or `usethis::edit_r_environ(scope = "project")` 
+to open and edit your .Renviron files.
+
+You can use `Sys.setenv()` to set temporary env vars that will persist in
+your current session.
+```{r eval=FALSE}
+Sys.setenv("az_client_id" = "xxxx-xxxx-xxxx-xxxx")
+
+## Check that it worked
+Sys.getenv("az_client_id")
+```
+```
+> [1] "xxxx-xxxx-xxxx-xxxx"
+```
+
+**Option 2: Save your credentials in a config file**
+This may be preferable if you're running batch jobs or workig in a pipeline that
+already uses a config file. 
+
+You can save your credentials as a .json, .toml, .yaml or other markup file,
+and then use an appropriate reader function to load the file as a list into R.
+```{r eval=FALSE}
+cred_list <- yaml::read_yaml("my_config.yaml")
+```
+
+:warning: if you save your credentials in a config file, make sure the file is
+in your .gitignore and only transferred using secure protocols.
+
+
+
+
+
+
+
+
+### Recommended login approach: Client-based authentication
+
+Client-based (i.e. app-based) authentication allows your R script to establish
+a connection to Azure using a service principal. This approach is designed to
+grant access to an app (i.e. to a piece of code), so unlike with user-based 
+authentication, does not require a person to be physically present to sign in.
+This is the approach we recommend, and the only approach that will work if you 
+are going to try to run your code:
+
+* As part of a scheduled job
+* On many remote machines (cloud or cluster)
+* In any other context where you won't have interactive access to the R terminal
+
+-------
+:warning: Treat your service principal like a password. Do not commit it to
+GitHub. To avoid leaking your service principal:
+
+* Set up detect-secrets
+-----
+
+
 
 ## Project Admin
 
 - Katelyn Gostic: email = `uep6@cdc.gov`
-- Zack Susswein: email = `utb2@cdc.gov`
-- Nate McIntosh: email = `ute2@cdc.gov`
-- Patrick Corbett: email = `pyv3@cdc.gov`
 
 ## General Disclaimer
-This repository was created for use by CDC programs to collaborate on public health related projects in support of the [CDC mission](https://www.cdc.gov/about/organization/mission.htm).  GitHub is not hosted by the CDC, but is a third party website used by CDC and its partners to share information and collaborate on software. CDC use of GitHub does not imply an endorsement of any one particular service, product, or enterprise.
+This repository was created for use by CDC programs to collaborate on public 
+health related projects in support of the [CDC mission](https://www.cdc.gov/about/organization/mission.htm).  
+GitHub is not hosted by the CDC, but is a third party website used by CDC and 
+its partners to share information and collaborate on software. CDC use of GitHub 
+does not imply an endorsement of any one particular service, product, or 
+enterprise.
+
+:information_source: This package and its documentation are being developed 
+to support in-house workflows at CDC. This code will not necessarily be designed
+or maintained for a general audience.
 
 ## Public Domain Standard Notice
 This repository constitutes a work of the United States Government and is not
