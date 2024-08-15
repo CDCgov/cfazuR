@@ -10,13 +10,11 @@ az_get_env_credentials()
 A list containing all required credentials: "az_tenant_id",
 "az_subscription", "az_resource_group", "az_storage_account", and "az_service
 principal", or an informative error if any are missing
-
-#nolint
 }
 \description{
 Fetch Azure credentials stored as environmental variables, if they exist
 }
 \details{
-See \href{https://github.com/CDCgov/cfazuR/tree/main?tab=readme-ov-file#required-setup-after-installation}{Required credential setup}
+See \href{https://github.com/CDCgov/cfazuR/tree/main?tab=readme-ov-file#required-setup-after-installation}{Required credential setup} #nolint
 for help finding and specifying Azure credntials.
 }
