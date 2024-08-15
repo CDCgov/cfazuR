@@ -2,3 +2,4 @@
 
 - Added new CI
 - Created package
+- Added Readme and getting started
