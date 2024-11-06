@@ -41,6 +41,66 @@ az_required_credentials <- function() {
   )
 }
 
+#' Helper fuction to set Azure credentials as environment variables
+#' @param AZURE_CLIENT_ID A character vector, the Azure client ID
+#' @param AZURE_TENANT_ID A character vector, the Azure tenant ID
+#' @param AZURE_CLIENT_SECRET A character vector, the Azure client secret
+#' @param AZURE_SUBSCRIPTION_ID A character vector, the Azure subscription ID
+#'  @param AZURE_RESOURCE_GROUP A character vector, the Azure resource group
+#' @param AZURE_STORAGE_ACCOUNT A character vector, the Azure storage account
+#' @details
+#' This function sets transient environment variables for the current R session.
+#' To set these variables permanently, add them to your .Renviron file using
+#' the syntax: `Sys.setenv(AZURE_SUBSCRIPTION_ID = "your_subscription_id")`.
+#' Try usethis::edit_r_environ() to open your .Renviron file in RStudio.
+#' For security reasons, never add the client ID or client secret to your
+#' .Renviron file.
+#' @export
+az_set_env_vars <- function(
+    AZURE_CLIENT_ID = "", # nolint
+    AZURE_TENANT_ID = "", # nolint
+    AZURE_CLIENT_SECRET = "", # nolint
+    AZURE_SUBSCRIPTION_ID = "", # nolint
+    AZURE_RESOURCE_GROUP = "", # nolint
+    AZURE_STORAGE_ACCOUNT = "") { # nolint
+  if (AZURE_CLIENT_ID != "") {
+    Sys.setenv(
+      AZURE_CLIENT_ID =
+        AZURE_CLIENT_ID
+    )
+  }
+  if (AZURE_TENANT_ID != "") {
+    Sys.setenv(
+      AZURE_TENANT_ID =
+        AZURE_TENANT_ID
+    )
+  }
+  if (AZURE_CLIENT_SECRET != "") {
+    Sys.setenv(
+      AZURE_CLIENT_SECRET =
+        AZURE_CLIENT_SECRET
+    )
+  }
+  if (AZURE_SUBSCRIPTION_ID != "") {
+    Sys.setenv(
+      AZURE_SUBSCRIPTION_ID =
+        AZURE_SUBSCRIPTION_ID
+    )
+  }
+  if (AZURE_RESOURCE_GROUP != "") {
+    Sys.setenv(
+      AZURE_RESOURCE_GROUP =
+        AZURE_RESOURCE_GROUP
+    )
+  }
+  if (AZURE_STORAGE_ACCOUNT != "") {
+    Sys.setenv(
+      AZURE_STORAGE_ACCOUNT =
+        AZURE_STORAGE_ACCOUNT
+    )
+  }
+}
+
 #' Internal function: fetch one Azure credential from environment variable
 #' and throw an informative error if credential is not found
 #'
