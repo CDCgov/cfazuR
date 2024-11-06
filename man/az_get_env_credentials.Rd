@@ -7,9 +7,8 @@
 az_get_env_credentials()
 }
 \value{
-A list containing all required credentials: "az_tenant_id",
-"az_subscription", "az_resource_group", "az_storage_account", and "az_service
-principal", or an informative error if any are missing
+A list containing all required credentials or an informative error
+if any are missing
 }
 \description{
 Fetch Azure credentials stored as environmental variables, if they exist

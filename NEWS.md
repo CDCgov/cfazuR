@@ -2,3 +2,4 @@
 
 - Added new CI
 - Created package
+- Functions to load and validate credentials from env vars
