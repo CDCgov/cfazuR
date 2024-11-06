@@ -2,7 +2,7 @@
 ##
 ## Several steps needs to happen in order to connect to an azure blob
 ## endpoint.
-## This script defines a lightweight wrapper around AzureRMR
+## This script defines an opinionated wrapper around AzureRMR
 ## for each step, then chains the steps together. Because each function in the
 ## heierarchy includes validation, the code will stop and throw an informative
 ## error if any step in the sequence fails.
@@ -32,12 +32,12 @@
 #' @export
 az_required_credentials <- function() {
   c(
-    "az_client_id",
-    "az_tenant_id",
-    "az_service_principal",
-    "az_subscription_id",
-    "az_resource_group",
-    "az_storage_account"
+    "AZURE_CLIENT_ID",
+    "AZURE_TENANT_ID",
+    "AZURE_CLIENT_SECRET",
+    "AZURE_SUBSCRIPTION_ID",
+    "AZURE_RESOURCE_GROUP",
+    "AZURE_STORAGE_ACCOUNT"
   )
 }
 
@@ -81,9 +81,8 @@ fetch_env_credential <- function(env_var) {
 
 #' Fetch Azure credentials stored as environmental variables, if they exist
 #'
-#' @returns A list containing all required credentials: "az_tenant_id",
-#' "az_subscription", "az_resource_group", "az_storage_account", and "az_service
-#' principal", or an informative error if any are missing
+#' @returns A list containing all required credentials or an informative error
+#' if any are missing
 #'
 #'
 #' @details See [Required credential setup](https://github.com/CDCgov/cfazuR/tree/main?tab=readme-ov-file#required-setup-after-installation) #nolint
